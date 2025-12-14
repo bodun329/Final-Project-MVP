@@ -1,31 +1,108 @@
-# Music Collaboration Platform API
+🎵 Music Collaboration Platform API (Final Project MVP)
+Project Overview
 
-## Overview
-This is a RESTful API for a Music Collaboration Platform, designed to help musicians upload tracks, find collaborators, and work together remotely. The API handles user registration, authentication, and track management.
+This is a REST API that allows musicians to collaborate online. Users can create accounts, log in, and manage tracks. The API handles user authentication and basic track management.
 
-## Features
-- **User Authentication:** Register and login with username and password.
-- **Track Management:** Add, view, and manage music tracks.
-- **Collaboration Support:** Users can collaborate on tracks (future feature placeholder).
-- **Database:** SQLite database managed with Sequelize.
+Key Features:
 
-## Technologies Used
-- Node.js
-- Express.js
-- Sequelize ORM
-- SQLite
-- bcrypt for password hashing
-- dotenv for environment variables
-- Jest (for testing)
+User registration and login
 
-## Getting Started
+Password hashing for security
 
-### Prerequisites
-- Node.js installed
-- npm installed
+Track creation and retrieval
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/bodun329/Final-Project-MVP.git
-   cd Final-Project-MVP
+SQLite database for storing users and tracks
+
+Error handling middleware
+
+Technologies Used
+
+Node.js & Express – Server framework
+
+Sequelize – ORM for SQLite database
+
+SQLite – Lightweight database
+
+bcrypt – Password hashing
+
+JWT – Authentication tokens
+
+Postman – API testing
+
+Setup Instructions
+
+Clone the repository:
+
+git clone https://github.com/bodun329/Final-Project-MVP.git
+cd Final-Project-MVP
+
+
+Install dependencies:
+
+npm install
+
+
+Run the server:
+
+node index.js
+
+
+Server runs on http://localhost:3000.
+
+Database
+
+The project uses SQLite. Sequelize automatically handles table creation for Users and Tracks. A test user is automatically created if it doesn't exist:
+
+{
+  "username": "testuser",
+  "password": "1234"
+}
+
+API Endpoints
+Users
+
+Register
+POST /users/register
+Request body (JSON):
+
+{
+  "username": "yourusername",
+  "password": "yourpassword"
+}
+
+
+Login
+POST /users/login
+Request body (JSON):
+
+{
+  "username": "yourusername",
+  "password": "yourpassword"
+}
+
+Tracks
+
+Create Track
+POST /tracks
+Request body (JSON):
+
+{
+  "title": "Track Title",
+  "artist": "Artist Name"
+}
+
+
+Get All Tracks
+GET /tracks
+
+Testing
+
+You can test API endpoints using Postman or curl. Make sure the server is running before sending requests.
+
+Notes
+
+Passwords are securely hashed with bcrypt.
+
+JWT is used for authentication.
+
+Only authenticated users can create or view tracks.
