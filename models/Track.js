@@ -4,12 +4,12 @@ const sequelize = require('../database/connection');
 const Track = sequelize.define('Track', {
   title: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   artist: {
     type: DataTypes.STRING,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 });
 
 module.exports = Track;

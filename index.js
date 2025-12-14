@@ -1,30 +1,91 @@
+require('dotenv').config(); // load environment variables
 const express = require('express');
-const app = express();
-const sequelize = require('./database/connection');
-
-const userRoutes = require('./routes/users');
-const trackRoutes = require('./routes/tracks');
-const User = require('./models/User');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { Sequelize, DataTypes } = require('sequelize');
 
+const app = express();
 app.use(express.json());
-app.use('/users', userRoutes);
-app.use('/tracks', trackRoutes);
 
-const PORT = 3000;
+// --- Database setup ---
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database.sqlite'
+});
 
-sequelize.sync({ alter: true }).then(async () => {
-  console.log('Database connected successfully.');
+// --- User model ---
+const User = sequelize.define('User', {
+  username: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  role: {
+    type: DataTypes.STRING,
+    defaultValue: 'user'
+  }
+});
 
-  // Create a test user automatically
-  const testUser = await User.findOne({ where: { username: 'testuser' } });
-  if (!testUser) {
-    const hashedPassword = await bcrypt.hash('1234', 10);
-    await User.create({ username: 'testuser', password: hashedPassword });
-    console.log('Test user created: testuser / 1234');
-  } else {
-    console.log('Test user already exists');
+// --- Sync database ---
+sequelize.sync().then(() => {
+  console.log('Database & tables created!');
+});
+
+// --- Routes ---
+
+// Register
+app.post('/users/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required' });
   }
 
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}).catch(err => console.error('DB connection failed:', err));
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ username, password: hashedPassword });
+    res.json({ message: 'User registered successfully', user: { id: user.id, username: user.username } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Login
+app.post('/users/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { username } });
+    if (!user) return res.status(400).json({ error: 'Invalid username or password' });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ error: 'Invalid username or password' });
+
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ message: 'Login successful', token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Test route to check if server is working
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
+// --- Start server ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
