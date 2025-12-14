@@ -106,3 +106,24 @@ Passwords are securely hashed with bcrypt.
 JWT is used for authentication.
 
 Only authenticated users can create or view tracks.
+# Final-Project-MVP
+
+## Overview
+This is a Music Collaboration Platform REST API allowing users to register, login, and manage tracks. JWT-based authentication ensures secure access.
+
+---
+
+## Features
+- User registration & login with JWT authentication
+- Passwords hashed using bcrypt
+- Tracks CRUD operations
+- SQLite database with Sequelize ORM
+- Role-based access (ready for future expansion)
+
+---
+
+## Installation
+1. Clone the repo:
+```bash
+git clone https://github.com/YOUR_USERNAME/Final-Project-MVP.git
+cd Final-Project-MVP
